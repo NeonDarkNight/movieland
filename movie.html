@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Details | MovieLand</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #0f0f0f;
+      color: white;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+    }
+    .poster {
+      width: 100%;
+      border-radius: 10px;
+    }
+    h1 {
+      text-align: center;
+    }
+    p {
+      line-height: 1.6;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 20px;
+      background-color: #1c1c1c;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+    }
+    iframe {
+      width: 100%;
+      height: 400px;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1 id="movieTitle">Loading...</h1>
+    <img id="moviePoster" class="poster" src="" alt="Movie Poster">
+    <iframe id="movieTrailer" src="" frameborder="0" allowfullscreen></iframe>
+    <p id="movieDescription"></p>
+
+    <a class="back" href="index.html">⬅ Back to Home</a>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const movie = params.get('movie');
+
+    const movies = {
+      "avengers": {
+        title: "Avengers: Endgame",
+        poster: "https://i.imgur.com/8RKXAIV.jpeg",
+        trailer: "https://www.youtube.com/embed/TcMBFSGVi1c",
+        description: "The Avengers assemble once more in order to reverse Thanos' actions and restore balance to the universe."
+      },
+      "joker": {
+        title: "Joker",
+        poster: "https://i.imgur.com/DcZ8kLk.jpeg",
+        trailer: "https://www.youtube.com/embed/zAGVQLHvwOY",
+        description: "A mentally troubled comedian embarks on a downward spiral that leads to the creation of an iconic villain."
+      },
+      "spiderman": {
+        title: "Spider-Man: No Way Home",
+        poster: "https://i.imgur.com/q2w7rTr.jpeg",
+        trailer: "https://www.youtube.com/embed/JfVOs4VSpmA",
+        description: "Peter Parker’s secret identity is revealed, bringing chaos to his life and those around him."
+      },
+      "freeguy": {
+        title: "Free Guy",
+        poster: "https://i.imgur.com/YcQHjzA.jpeg",
+        trailer: "https://www.youtube.com/embed/X2m-08cOAbc",
+        description: "A bank teller discovers that he’s actually an NPC inside a brutal, open-world video game."
+      }
+    };
+
+    const data = movies[movie];
+    if (data) {
+      document.getElementById('movieTitle').textContent = data.title;
+      document.getElementById('moviePoster').src = data.poster;
+      document.getElementById('movieTrailer').src = data.trailer;
+      document.getElementById('movieDescription').textContent = data.description;
+    } else {
+      document.querySelector('.container').innerHTML = "<h2>Movie not found.</h2><a class='back' href='index.html'>⬅ Back</a>";
+    }
+  </script>
+
+</body>
+</html>
