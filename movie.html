@@ -1,100 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MovieLand - Film</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #0f0f0f;
-      color: white;
-      text-align: center;
-      padding: 20px;
-    }
-    img {
-      width: 250px;
-      height: auto;
-      max-width: 100%;
-      border-radius: 10px;
-      margin: 15px 0;
-    }
-    iframe {
-      width: 100%;
-      max-width: 560px;
-      height: 315px;
-      margin-top: 10px;
-      border-radius: 10px;
-      border: none;
-    }
-    a {
-      color: #00b3ff;
-      text-decoration: none;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MovieLand - Film</title>
+<style>
+  body {margin:0; font-family:Arial,sans-serif; background:#0f0f0f; color:white; text-align:center; padding:20px;}
+  img {width:250px; height:auto; max-width:100%; border-radius:10px; margin:15px 0;}
+  iframe {width:100%; max-width:560px; height:315px; margin-top:10px; border-radius:10px; border:none;}
+  a {color:#00b3ff; text-decoration:none;}
+</style>
 </head>
 <body>
 
-  <h1 id="movieTitle"></h1>
-  <img id="moviePoster" src="" alt="Movie Poster">
-  <div id="trailerContainer"></div>
-  <p id="movieDesc"></p>
-  <p><a href="index.html">⬅ Back to home</a></p>
+<h1 id="movieTitle"></h1>
+<img id="moviePoster" src="" alt="Movie Poster">
+<div id="trailerContainer"></div>
+<p id="movieDesc"></p>
+<p><a href="index.html">⬅ Back to home</a></p>
 
-  <script>
-    // Film məlumatları
-    const movies = {
-      avengers: {
-        title: "Avengers: Endgame",
-        poster: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg",
-        trailer: "https://www.youtube.com/embed/TcMBFSGVi1c",
-        desc: "The Avengers unite once more to reverse Thanos's actions and restore balance to the universe."
-      },
-      joker: {
-        title: "Joker",
-        poster: "https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-        trailer: "https://www.youtube.com/embed/zAGVQLHvwOY",
-        desc: "Arthur Fleck, a failed comedian, descends into madness and becomes the criminal mastermind known as Joker."
-      },
-      spiderman: {
-        title: "Spider-Man: No Way Home",
-        poster: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg",
-        trailer: "https://www.youtube.com/embed/JfVOs4VSpmA",
-        desc: "Peter Parker seeks Doctor Strange's help to make everyone forget he's Spider-Man — but chaos ensues."
-      },
-      freeguy: {
-        title: "Free Guy",
-        poster: "https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg",
-        trailer: "https://www.youtube.com/embed/X2m-08cOAbc",
-        desc: "A bank teller discovers he's actually a character inside an open-world video game."
-      },
-      interstellar: {
-        title: "Interstellar",
-        poster: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg",
-        trailer: "https://www.youtube.com/watch?v=zSWdZVtXT7E",
-        desc: "A group of explorers travel through a wormhole in space to ensure humanity's survival."
-      }
-    };
+<script>
+const movies = {
+  avengers:{title:"Avengers: Endgame", poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", trailer:"https://www.youtube.com/embed/TcMBFSGVi1c", desc:"The Avengers unite once more to reverse Thanos's actions and restore balance to the universe."},
+  joker:{title:"Joker", poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/zAGVQLHvwOY", desc:"Arthur Fleck, a failed comedian, descends into madness and becomes the criminal mastermind known as Joker."},
+  spiderman:{title:"Spider-Man: No Way Home", poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", trailer:"https://www.youtube.com/embed/JfVOs4VSpmA", desc:"Peter Parker seeks Doctor Strange's help to make everyone forget he's Spider-Man — but chaos ensues."},
+  freeguy:{title:"Free Guy", poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/X2m-08cOAbc", desc:"A bank teller discovers he's actually a character inside an open-world video game."},
+  interstellar:{title:"Interstellar", poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg", trailer:"", desc:"A group of explorers travel through a wormhole in space to ensure humanity's survival."}
+};
 
-    // URL-dən film ID-ni götür
-    const urlParams = new URLSearchParams(window.location.search);
-    const movieId = urlParams.get('movie');
+const urlParams=new URLSearchParams(window.location.search);
+const movieId=urlParams.get('movie');
+const movie=movies[movieId];
 
-    const movie = movies[movieId];
-    if (movie) {
-      document.getElementById('movieTitle').textContent = movie.title;
-      document.getElementById('moviePoster').src = movie.poster;
-      document.getElementById('movieDesc').textContent = movie.desc;
-      if (movie.trailer) {
-        document.getElementById('trailerContainer').innerHTML = `<iframe src="${movie.trailer}" allowfullscreen></iframe>`;
-      } else {
-        document.getElementById('trailerContainer').innerHTML = `<p><i>No trailer available</i></p>`;
-      }
-    } else {
-      document.body.innerHTML = "<h2>Movie not found</h2><p><a href='index.html'>Back</a></p>";
-    }
-  </script>
+if(movie){
+  document.getElementById('movieTitle').textContent=movie.title;
+  document.getElementById('moviePoster').src=movie.poster;
+  document.getElementById('movieDesc').textContent=movie.desc;
+  if(movie.trailer){
+    document.getElementById('trailerContainer').innerHTML=`<iframe src="${movie.trailer}" allowfullscreen></iframe>`;
+  }else{
+    document.getElementById('trailerContainer').innerHTML=`<p><i>No trailer available</i></p>`;
+  }
+}else{
+  document.body.innerHTML="<h2>Movie not found</h2><p><a href='index.html'>Back</a></p>";
+}
+</script>
 
 </body>
 </html>
