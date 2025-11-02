@@ -13,48 +13,172 @@
     .back-btn {margin:0 0 26px 0; display:inline-block; color:#c00; text-decoration:none; font-weight:600; letter-spacing:1px;}
     .info {color:#bbb; margin:0 0 14px 0;}
     .desc {font-size:1.1rem; line-height:1.6;}
+    .trailer-block {margin:32px 0 0 0;}
+    .trailer-block h4 {margin-bottom:10px;}
+    .trailer-frame {width:100%; max-width:600px; aspect-ratio:16/9; min-height:240px; border:0; border-radius:8px; background:#212121;}
+    .lang-dropdown {
+      position: absolute; right: 32px; top: 24px; z-index:2; user-select:none;
+    }
+    .lang-selected {
+      background: #232323; color: #eee; border:none;
+      padding: 7px 18px 7px 13px; border-radius:6px 6px 0 0;
+      font-size:1rem; font-weight:bold; cursor:pointer;
+      display:flex; align-items:center; gap:6px;
+      min-width:70px;
+    }
+    .lang-selected:after {
+      content: '▼'; font-size:.7em; margin-left:7px;
+      transition:.2s; pointer-events:none;
+    }
+    .lang-dropdown.open .lang-selected:after {transform:rotate(-180deg);}
+    .lang-list {
+      display:none; position:absolute; right:0; top:34px; background:#232323; border-radius:0 0 7px 7px;
+      box-shadow:0 8px 20px #0008; min-width:100%; padding:0;
+      overflow:hidden; border-top:1px solid #222;
+    }
+    .lang-dropdown.open .lang-list {display:block;}
+    .lang-list button {
+      display:block; width:100%; border:none; background:transparent; color:#eee; font-size:1rem;
+      text-align:left; padding:10px 18px; cursor:pointer; transition:.2s;
+    }
+    .lang-list button.active, .lang-list button:hover {background:#c00; color:#fff;}
     @media (max-width:600px){
       .container {margin:12px; border-radius:6px;}
       .content {padding:14px;}
       .poster {max-height:210px;}
       h1 {font-size:1.3rem;}
+      .trailer-frame {min-height:120px;}
+      .lang-dropdown {top:12px; right:12px;}
     }
   </style>
 </head>
 <body>
+  <div class="lang-dropdown" id="langDropdown">
+    <button class="lang-selected" id="langSelectedBtn"></button>
+    <div class="lang-list" id="langList"></div>
+  </div>
   <div class="container" id="detailBox"></div>
   <script>
-    // Filmlər siyahısı (Eyni məlumatlar index.html-dən)
+    // DİLLƏR
+    const LANGS = {
+      az: {
+        name: "AZ",
+        back: "← Bütün filmlər",
+        notfound: "Film tapılmadı",
+        year: "İl",
+        category: "Janr",
+        desc: "Təsviri yoxdur.",
+        trailer: "Trailer",
+        notrailer: "Trailer yoxdur."
+      },
+      tr: {
+        name: "TR",
+        back: "← Tüm filmler",
+        notfound: "Film bulunamadı",
+        year: "Yıl",
+        category: "Tür",
+        desc: "Açıklama yok.",
+        trailer: "Fragman",
+        notrailer: "Fragman yok."
+      },
+      en: {
+        name: "EN",
+        back: "← All movies",
+        notfound: "Movie not found",
+        year: "Year",
+        category: "Genre",
+        desc: "No description.",
+        trailer: "Trailer",
+        notrailer: "No trailer."
+      }
+    };
+    // Filmlər
     const movies = [
-      {id:"avengers", title:"Avengers: Endgame", year:2019, category:"Aksiya", poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", desc:"Qəhrəmanlar kainatı xilas etmək üçün son döyüşə hazırlaşırlar."},
-      {id:"joker", title:"Joker", year:2019, category:"Dram", poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc:"Tənhalıq və cəmiyyətin rədd etdiyi bir insanın tarixçəsi."},
-      {id:"spiderman", title:"Spider-Man: No Way Home", year:2021, category:"Aksiya", poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", desc:"Peter Parkerin həyatı alt-üst olur."},
-      {id:"freeguy", title:"Free Guy", year:2021, category:"Komediya", poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc:"Bir oyun dünyasında qəhrəman olmağa çalışan adi bir adam."},
-      {id:"interstellar", title:"Interstellar", year:2014, category:"Fantastik", poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg", desc:"İnsanlığın sağ qalması üçün kosmik səyahət."}
+      {id:"avengers", title:{az:"Avengers: Endgame",tr:"Avengers: Endgame",en:"Avengers: Endgame"}, year:2019, category:{az:"Aksiya",tr:"Aksiyon",en:"Action"}, poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", trailer:"https://www.youtube.com/embed/TcMBFSGVi1c", desc:{
+        az:"Qəhrəmanlar kainatı xilas etmək üçün son döyüşə hazırlaşırlar.",tr:"Kahramanlar evreni kurtarmak için son savaşa hazırlanıyor.",en:"The heroes prepare for the final battle to save the universe."
+      }},
+      {id:"joker", title:{az:"Joker",tr:"Joker",en:"Joker"}, year:2019, category:{az:"Dram",tr:"Dram",en:"Drama"}, poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/zAGVQLHvwOY", desc:{
+        az:"Tənhalıq və cəmiyyətin rədd etdiyi bir insanın tarixçəsi.",tr:"Toplum tarafından reddedilen yalnız bir adamın hikayesi.",en:"The story of a man rejected by society and loneliness."
+      }},
+      {id:"spiderman", title:{az:"Spider-Man: No Way Home",tr:"Spider-Man: No Way Home",en:"Spider-Man: No Way Home"}, year:2021, category:{az:"Aksiya",tr:"Aksiyon",en:"Action"}, poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", trailer:"https://www.youtube.com/embed/JfVOs4VSpmA", desc:{
+        az:"Peter Parkerin həyatı alt-üst olur.",tr:"Peter Parker'ın hayatı alt üst olur.",en:"Peter Parker's life is turned upside down."
+      }},
+      {id:"freeguy", title:{az:"Free Guy",tr:"Free Guy",en:"Free Guy"}, year:2021, category:{az:"Komediya",tr:"Komedi",en:"Comedy"}, poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/X2m-08cOAbc", desc:{
+        az:"Bir oyun dünyasında qəhrəman olmağa çalışan adi bir adam.",tr:"Bir oyun dünyasında kahraman olmaya çalışan sıradan bir adam.",en:"An ordinary man trying to be a hero in a game world."
+      }},
+      {id:"interstellar", title:{az:"Interstellar",tr:"Interstellar",en:"Interstellar"}, year:2014, category:{az:"Fantastik",tr:"Bilim-Kurgu",en:"Sci-Fi"}, poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg", trailer:"https://www.youtube.com/embed/zSWdZVtXT7E", desc:{
+        az:"İnsanlığın sağ qalması üçün kosmik səyahət.",tr:"İnsanlığın hayatta kalması için bir uzay yolculuğu.",en:"A space journey for the survival of humanity."
+      }}
     ];
-
+    // Lang util
     function getParam(name){
       const url = new URL(window.location.href);
       return url.searchParams.get(name);
     }
-
-    const movieId = getParam('movie');
-    const movie = movies.find(m=>m.id === movieId);
-    const detailBox = document.getElementById('detailBox');
-
-    if(!movie){
-      detailBox.innerHTML = `<div class="content"><a href="index.html" class="back-btn">← Geri qayıt</a><h1>Film tapılmadı</h1></div>`;
-    } else {
-      detailBox.innerHTML = `
-        <img class="poster" src="${movie.poster}" alt="${movie.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x380?text=No+Image'">
-        <div class="content">
-          <a href="index.html" class="back-btn">← Bütün filmlər</a>
-          <h1>${movie.title}</h1>
-          <div class="info">${movie.year} • ${movie.category}</div>
-          <div class="desc">${movie.desc}</div>
-        </div>
-      `;
+    let currentLang = getParam('lang') || localStorage.getItem('movielandLang') || 'az';
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('movielandLang', lang);
+      renderLangDropdown();
+      renderDetail();
     }
+    // Dropdown sistemi
+    const langDropdown = document.getElementById('langDropdown');
+    const langSelectedBtn = document.getElementById('langSelectedBtn');
+    const langList = document.getElementById('langList');
+    function renderLangDropdown() {
+      langSelectedBtn.innerHTML = LANGS[currentLang].name;
+      langList.innerHTML = '';
+      Object.keys(LANGS).forEach(key=>{
+        const btn = document.createElement('button');
+        btn.textContent = LANGS[key].name;
+        btn.className = (key===currentLang) ? "active" : "";
+        btn.onclick = (e)=>{
+          e.stopPropagation();
+          setLang(key);
+          langDropdown.classList.remove('open');
+          // URL-də lang parametri dəyişdir
+          const url = new URL(window.location.href);
+          url.searchParams.set('lang', key);
+          window.history.replaceState({}, '', url);
+        };
+        langList.appendChild(btn);
+      });
+    }
+    langSelectedBtn.onclick = (e)=>{
+      e.stopPropagation();
+      langDropdown.classList.toggle('open');
+    };
+    document.addEventListener('click', ()=>langDropdown.classList.remove('open'));
+    // Film detalları
+    function renderDetail(){
+      const movieId = getParam('movie');
+      const movie = movies.find(m=>m.id === movieId);
+      const detailBox = document.getElementById('detailBox');
+      if(!movie){
+        detailBox.innerHTML = `<div class="content"><a href="index.html?lang=${currentLang}" class="back-btn">${LANGS[currentLang].back}</a><h1>${LANGS[currentLang].notfound}</h1></div>`;
+      } else {
+        detailBox.innerHTML = `
+          <img class="poster" src="${movie.poster}" alt="${movie.title[currentLang]}" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x380?text=No+Image'">
+          <div class="content">
+            <a href="index.html?lang=${currentLang}" class="back-btn">${LANGS[currentLang].back}</a>
+            <h1>${movie.title[currentLang]}</h1>
+            <div class="info">${LANGS[currentLang].year}: ${movie.year} • ${LANGS[currentLang].category}: ${movie.category[currentLang]}</div>
+            <div class="desc">${movie.desc ? movie.desc[currentLang] : LANGS[currentLang].desc}</div>
+            <div class="trailer-block">
+              <h4>${LANGS[currentLang].trailer}</h4>
+              ${movie.trailer ?
+                `<iframe class="trailer-frame" src="${movie.trailer}" allowfullscreen loading="lazy"></iframe>`
+                : `<div style="color:#aaa">${LANGS[currentLang].notrailer}</div>`
+              }
+            </div>
+          </div>
+        `;
+      }
+    }
+    // Başlanğıc
+    renderLangDropdown();
+    renderDetail();
   </script>
 </body>
 </html>
