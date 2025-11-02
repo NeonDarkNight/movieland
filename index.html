@@ -18,6 +18,26 @@
       font-size: 24px;
       font-weight: bold;
     }
+    nav {
+      background-color: #141414;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    nav button {
+      background-color: #2b2b2b;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+    nav button:hover {
+      background-color: #3c3c3c;
+    }
     .movies {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -55,26 +75,62 @@
 
   <header>🎬 MovieLand</header>
 
+  <!-- ✅ KATEQORİYALAR -->
+  <nav>
+    <button onclick="filterMovies('all')">All</button>
+    <button onclick="filterMovies('action')">Action</button>
+    <button onclick="filterMovies('comedy')">Comedy</button>
+    <button onclick="filterMovies('drama')">Drama</button>
+    <button onclick="filterMovies('horror')">Horror</button>
+  </nav>
+
+  <!-- ✅ FİLMLƏR -->
   <div class="movies">
-    <div class="movie">
+    <div class="movie" data-category="action">
       <img src="https://i.imgur.com/8RKXAIV.jpeg" alt="Movie Poster">
       <h3>Avengers: Endgame</h3>
     </div>
-    <div class="movie">
+
+    <div class="movie" data-category="drama">
       <img src="https://i.imgur.com/DcZ8kLk.jpeg" alt="Movie Poster">
       <h3>Joker</h3>
     </div>
-    <div class="movie">
+
+    <div class="movie" data-category="action">
       <img src="https://i.imgur.com/yUuNh8e.jpeg" alt="Movie Poster">
       <h3>Fast & Furious 9</h3>
     </div>
-    <div class="movie">
+
+    <div class="movie" data-category="action">
       <img src="https://i.imgur.com/q2w7rTr.jpeg" alt="Movie Poster">
       <h3>Spider-Man: No Way Home</h3>
+    </div>
+
+    <div class="movie" data-category="comedy">
+      <img src="https://i.imgur.com/YcQHjzA.jpeg" alt="Movie Poster">
+      <h3>Free Guy</h3>
+    </div>
+
+    <div class="movie" data-category="horror">
+      <img src="https://i.imgur.com/79xj8lT.jpeg" alt="Movie Poster">
+      <h3>It: Chapter Two</h3>
     </div>
   </div>
 
   <footer>© 2025 MovieLand | All rights reserved.</footer>
+
+  <script>
+    function filterMovies(category) {
+      const movies = document.querySelectorAll('.movie');
+      movies.forEach(movie => {
+        if (category === 'all' || movie.dataset.category === category) {
+          movie.style.display = 'block';
+        } else {
+          movie.style.display = 'none';
+        }
+      });
+    }
+  </script>
 
 </body>
 </html>
