@@ -7,20 +7,37 @@
   <style>
     body {background:#111; color:#fff; font-family:sans-serif; margin:0;}
     header {text-align:center; padding:22px 0; font-size:2rem; background:#1a1a1a; letter-spacing:1px;}
-    .lang-bar {display:flex; justify-content:center; gap:6px; margin:10px 0;}
-    .lang-bar button {
-      background:#232323; color:#eee; border:none; padding:7px 13px; border-radius:5px; font-size:.98rem;
-      cursor:pointer; transition:.2s; font-weight:bold; outline:none;
+    .lang-dropdown {
+      position: absolute; right: 32px; top: 24px; z-index:2; user-select:none;
     }
-    .lang-bar button.active, .lang-bar button:hover {background:#c00; color:#fff;}
+    .lang-selected {
+      background: #232323; color: #eee; border:none;
+      padding: 7px 18px 7px 13px; border-radius:6px 6px 0 0;
+      font-size:1rem; font-weight:bold; cursor:pointer;
+      display:flex; align-items:center; gap:6px;
+      min-width:70px;
+    }
+    .lang-selected:after {
+      content: '▼'; font-size:.7em; margin-left:7px;
+      transition:.2s; pointer-events:none;
+    }
+    .lang-dropdown.open .lang-selected:after {transform:rotate(-180deg);}
+    .lang-list {
+      display:none; position:absolute; right:0; top:34px; background:#232323; border-radius:0 0 7px 7px;
+      box-shadow:0 8px 20px #0008; min-width:100%; padding:0;
+      overflow:hidden; border-top:1px solid #222;
+    }
+    .lang-dropdown.open .lang-list {display:block;}
+    .lang-list button {
+      display:block; width:100%; border:none; background:transparent; color:#eee; font-size:1rem;
+      text-align:left; padding:10px 18px; cursor:pointer; transition:.2s;
+    }
+    .lang-list button.active, .lang-list button:hover {background:#c00; color:#fff;}
     .categories {display:flex; gap:10px; justify-content:center; margin:18px 0 6px 0; flex-wrap:wrap;}
     .categories button {background:#222; color:#fff; border:none; padding:10px 18px; border-radius:6px; cursor:pointer; font-size:1rem; transition:.2s;}
     .categories button.active, .categories button:hover {background:#c00;}
     .movies {
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-      gap:18px; padding:20px;
-      justify-items:center;
+      display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px; padding:20px; justify-items:center;
     }
     .movie {
       background:#222; border-radius:9px; overflow:hidden; text-align:center; transition:.2s;
@@ -44,6 +61,7 @@
       .movie {width:100%; min-width:90px;}
       .movie img {height:120px; max-height:120px;}
       .categories button {font-size:.95rem;}
+      .lang-dropdown {top:12px; right:12px;}
     }
     .search-bar {display:flex; justify-content:center; margin:10px 0;}
     .search-bar input[type="text"] {
@@ -55,10 +73,9 @@
 </head>
 <body>
   <header id="siteTitle">🎬 Film Kataloqu</header>
-  <div class="lang-bar">
-    <button id="langAz">AZ</button>
-    <button id="langTr">TR</button>
-    <button id="langEn">EN</button>
+  <div class="lang-dropdown" id="langDropdown">
+    <button class="lang-selected" id="langSelectedBtn"></button>
+    <div class="lang-list" id="langList"></div>
   </div>
   <div class="search-bar">
     <input id="searchInput" type="text" placeholder="Film adı ilə axtar...">
@@ -70,54 +87,61 @@
     // DİLLƏR
     const LANGS = {
       az: {
+        name: "AZ",
         siteTitle: "🎬 Film Kataloqu",
         searchPlaceholder: "Film adı ilə axtar...",
         categories: ["Bütün", "Aksiya", "Komediya", "Dram", "Fantastik"],
         notFound: "Film tapılmadı."
       },
       tr: {
+        name: "TR",
         siteTitle: "🎬 Film Kataloğu",
         searchPlaceholder: "Film adına göre ara...",
         categories: ["Hepsi", "Aksiyon", "Komedi", "Dram", "Bilim-Kurgu"],
         notFound: "Film bulunamadı."
       },
       en: {
+        name: "EN",
         siteTitle: "🎬 Movie Catalog",
         searchPlaceholder: "Search by movie name...",
         categories: ["All", "Action", "Comedy", "Drama", "Sci-Fi"],
         notFound: "No movies found."
       }
     };
-
     // Filmlər
     const movies = [
-      {id:"avengers", title:{az:"Avengers: Endgame",tr:"Avengers: Endgame",en:"Avengers: Endgame"}, year:2019, category:{az:"Aksiya",tr:"Aksiyon",en:"Action"}, poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg"},
-      {id:"joker", title:{az:"Joker",tr:"Joker",en:"Joker"}, year:2019, category:{az:"Dram",tr:"Dram",en:"Drama"}, poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
-      {id:"spiderman", title:{az:"Spider-Man: No Way Home",tr:"Spider-Man: No Way Home",en:"Spider-Man: No Way Home"}, year:2021, category:{az:"Aksiya",tr:"Aksiyon",en:"Action"}, poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg"},
-      {id:"freeguy", title:{az:"Free Guy",tr:"Free Guy",en:"Free Guy"}, year:2021, category:{az:"Komediya",tr:"Komedi",en:"Comedy"}, poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
-      {id:"interstellar", title:{az:"Interstellar",tr:"Interstellar",en:"Interstellar"}, year:2014, category:{az:"Fantastik",tr:"Bilim-Kurgu",en:"Sci-Fi"}, poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg"}
+      {id:"avengers", title:{az:"Avengers: Endgame",tr:"Avengers: Endgame",en:"Avengers: Endgame"}, year:2019, category:{az:"Aksiya",tr:"Aksiyon",en:"Action"}, poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", trailer:"https://www.youtube.com/embed/TcMBFSGVi1c"},
+      {id:"joker", title:{az:"Joker",tr:"Joker",en:"Joker"}, year:2019, category:{az:"Dram",tr:"Dram",en:"Drama"}, poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/zAGVQLHvwOY"},
+      {id:"spiderman", title:{az:"Spider-Man: No Way Home",tr:"Spider-Man: No Way Home",en:"Spider-Man: No Way Home"}, year:2021, category:{az:"Aksiya",tr:"Aksiyon",en:"Action"}, poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", trailer:"https://www.youtube.com/embed/JfVOs4VSpmA"},
+      {id:"freeguy", title:{az:"Free Guy",tr:"Free Guy",en:"Free Guy"}, year:2021, category:{az:"Komediya",tr:"Komedi",en:"Comedy"}, poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/X2m-08cOAbc"},
+      {id:"interstellar", title:{az:"Interstellar",tr:"Interstellar",en:"Interstellar"}, year:2014, category:{az:"Fantastik",tr:"Bilim-Kurgu",en:"Sci-Fi"}, poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg", trailer:"https://www.youtube.com/embed/zSWdZVtXT7E"}
     ];
-
     // DİL SEÇİMİ
     let currentLang = localStorage.getItem('movielandLang') || 'az';
-
-    function setLang(lang) {
-      currentLang = lang;
-      localStorage.setItem('movielandLang', lang);
-      document.getElementById('siteTitle').textContent = LANGS[lang].siteTitle;
-      document.getElementById('searchInput').placeholder = LANGS[lang].searchPlaceholder;
-      // Kateqoriyaları yenilə
-      renderCategories();
-      // Filtrləmə və göstərmə
-      const activeCatBtn = document.querySelector('.categories button.active');
-      let activeCat = LANGS[lang].categories[0];
-      if (activeCatBtn) activeCat = activeCatBtn.textContent;
-      filterMovies(activeCat, searchInput.value.trim());
-      // Dil düymələrini yenilə
-      document.querySelectorAll('.lang-bar button').forEach(btn=>{
-        btn.classList.toggle('active', btn.id==="lang"+lang.charAt(0).toUpperCase()+lang.substr(1));
+    // Dropdown sistemi
+    const langDropdown = document.getElementById('langDropdown');
+    const langSelectedBtn = document.getElementById('langSelectedBtn');
+    const langList = document.getElementById('langList');
+    function renderLangDropdown() {
+      langSelectedBtn.innerHTML = LANGS[currentLang].name;
+      langList.innerHTML = '';
+      Object.keys(LANGS).forEach(key=>{
+        const btn = document.createElement('button');
+        btn.textContent = LANGS[key].name;
+        btn.className = (key===currentLang) ? "active" : "";
+        btn.onclick = (e)=>{
+          e.stopPropagation();
+          setLang(key);
+          langDropdown.classList.remove('open');
+        };
+        langList.appendChild(btn);
       });
     }
+    langSelectedBtn.onclick = (e)=>{
+      e.stopPropagation();
+      langDropdown.classList.toggle('open');
+    };
+    document.addEventListener('click', ()=>langDropdown.classList.remove('open'));
 
     // KATEQORİYA DÜYMƏLƏRİ
     const categoryList = document.getElementById('categoryList');
@@ -144,7 +168,6 @@
         filtered = filtered.filter(m => m.title[currentLang].toLowerCase().includes(searchTerm.toLowerCase()));
       showMovies(filtered);
     }
-
     // Filmlərin göstərilməsi
     function showMovies(list) {
       movieList.innerHTML = "";
@@ -164,20 +187,27 @@
         movieList.appendChild(div);
       });
     }
-
     // Axtarış inputu
     const searchInput = document.getElementById('searchInput');
     searchInput.addEventListener('input', ()=>{
       const activeCat = document.querySelector('.categories button.active');
       filterMovies(activeCat ? activeCat.textContent : LANGS[currentLang].categories[0], searchInput.value.trim());
     });
-
-    // Dil düymələri
-    document.getElementById('langAz').onclick = () => setLang('az');
-    document.getElementById('langTr').onclick = () => setLang('tr');
-    document.getElementById('langEn').onclick = () => setLang('en');
-
+    // Dili dəyiş və hər şeyi yenilə
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('movielandLang', lang);
+      document.getElementById('siteTitle').textContent = LANGS[lang].siteTitle;
+      document.getElementById('searchInput').placeholder = LANGS[lang].searchPlaceholder;
+      renderLangDropdown();
+      renderCategories();
+      const activeCatBtn = document.querySelector('.categories button.active');
+      let activeCat = LANGS[lang].categories[0];
+      if (activeCatBtn) activeCat = activeCatBtn.textContent;
+      filterMovies(activeCat, searchInput.value.trim());
+    }
     // Başlanğıcda hər şeyi göstər
+    renderLangDropdown();
     setLang(currentLang);
   </script>
 </body>
