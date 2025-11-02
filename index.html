@@ -1,145 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MovieLand</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #0f0f0f;
-      color: white;
-    }
-    header {
-      background-color: #1c1c1c;
-      padding: 15px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .categories {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin: 20px 0;
-    }
-    .categories button {
-      background-color: #1c1c1c;
-      border: none;
-      color: white;
-      padding: 10px 15px;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    .categories button:hover {
-      background-color: #333;
-    }
-    .movies {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 15px;
-      padding: 20px;
-    }
-    .movie {
-      background-color: #1c1c1c;
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
-      transition: 0.3s;
-      text-align: center;
-    }
-    .movie:hover {
-      transform: scale(1.05);
-    }
-    .movie img {
-      width: 100%;
-      height: 220px;       /* poster ölçüsü */
-      object-fit: cover;    /* boxa uyğun kəsir */
-      display: block;
-      background: #222;     /* şəkil yüklənmirsə arxa plan */
-    }
-    .movie h3 {
-      margin: 10px 0;
-      font-size: 16px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MovieLand</title>
+<style>
+  body { margin:0; font-family:Arial,sans-serif; background:#0f0f0f; color:white;}
+  header {background:#1c1c1c; padding:15px; text-align:center; font-size:24px; font-weight:bold;}
+  .categories {display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin:20px 0;}
+  .categories button {background:#1c1c1c; border:none; color:white; padding:10px 15px; border-radius:5px; cursor:pointer; transition:.3s;}
+  .categories button:hover{background:#333;}
+  .movies {display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:15px; padding:20px;}
+  .movie {background:#1c1c1c; border-radius:10px; overflow:hidden; cursor:pointer; transition:.3s; text-align:center;}
+  .movie:hover {transform:scale(1.05);}
+  .movie img {width:100%; height:220px; object-fit:cover; display:block; background:#222;}
+  .movie h3 {margin:10px 0; font-size:16px;}
+</style>
 </head>
 <body>
 
-  <header>🎬 MovieLand</header>
+<header>🎬 MovieLand</header>
 
-  <div class="categories">
-    <button onclick="filterMovies('all')">All</button>
-    <button onclick="filterMovies('action')">Action</button>
-    <button onclick="filterMovies('comedy')">Comedy</button>
-    <button onclick="filterMovies('drama')">Drama</button>
-    <button onclick="filterMovies('sci-fi')">Sci-Fi</button>
-  </div>
+<div class="categories">
+  <button onclick="filterMovies('all')">All</button>
+  <button onclick="filterMovies('action')">Action</button>
+  <button onclick="filterMovies('comedy')">Comedy</button>
+  <button onclick="filterMovies('drama')">Drama</button>
+  <button onclick="filterMovies('sci-fi')">Sci-Fi</button>
+</div>
 
-  <div class="movies" id="movieList"></div>
+<div class="movies" id="movieList"></div>
 
-  <script>
-    // Film məlumatları (poster linkləri IMDb-dən)
-    const movies = [
-      {
-        id: "avengers",
-        title: "Avengers: Endgame",
-        category: "action",
-        poster: "https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg"
-      },
-      {
-        id: "joker",
-        title: "Joker",
-        category: "drama",
-        poster: "https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
-      },
-      {
-        id: "spiderman",
-        title: "Spider-Man: No Way Home",
-        category: "action",
-        poster: "https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg"
-      },
-      {
-        id: "freeguy",
-        title: "Free Guy",
-        category: "comedy",
-        poster: "https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
-      },
-      {
-        id: "interstellar",
-        title: "Interstellar",
-        category: "sci-fi",
-        poster: "https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg"
-      }
-    ];
+<script>
+const movies = [
+  {id:"avengers", title:"Avengers: Endgame", category:"action", poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg"},
+  {id:"joker", title:"Joker", category:"drama", poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+  {id:"spiderman", title:"Spider-Man: No Way Home", category:"action", poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg"},
+  {id:"freeguy", title:"Free Guy", category:"comedy", poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"},
+  {id:"interstellar", title:"Interstellar", category:"sci-fi", poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg"}
+];
 
-    // Filmləri göstər
-    const movieList = document.getElementById('movieList');
-    function showMovies(list) {
-      movieList.innerHTML = "";
-      list.forEach(movie => {
-        const div = document.createElement('div');
-        div.className = 'movie';
-        div.setAttribute('data-category', movie.category);
-        div.onclick = () => location.href = `movie.html?movie=${movie.id}`;
-        div.innerHTML = `
-          <img src="${movie.poster}" alt="${movie.title}">
-          <h3>${movie.title}</h3>
-        `;
-        movieList.appendChild(div);
-      });
-    }
+const movieList = document.getElementById('movieList');
 
-    function filterMovies(category) {
-      if (category === 'all') showMovies(movies);
-      else showMovies(movies.filter(m => m.category === category));
-    }
+function showMovies(list) {
+  movieList.innerHTML="";
+  list.forEach(m=>{
+    const div=document.createElement('div');
+    div.className='movie';
+    div.setAttribute('data-category',m.category);
+    div.onclick=()=>location.href=`movie.html?movie=${m.id}`;
+    div.innerHTML=`<img src="${m.poster}" alt="${m.title}"><h3>${m.title}</h3>`;
+    movieList.appendChild(div);
+  });
+}
 
-    showMovies(movies);
-  </script>
+function filterMovies(category) {
+  if(category==='all') showMovies(movies);
+  else showMovies(movies.filter(m=>m.category===category));
+}
+
+showMovies(movies);
+</script>
 
 </body>
 </html>
