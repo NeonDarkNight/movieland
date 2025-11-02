@@ -3,96 +3,95 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Movie Details | MovieLand</title>
+  <title>MovieLand - Film</title>
   <style>
     body {
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #0f0f0f;
       color: white;
+      text-align: center;
       padding: 20px;
     }
-    .container {
-      max-width: 800px;
-      margin: auto;
-    }
-    .poster {
-      width: 100%;
+    img {
+      width: 250px;
       border-radius: 10px;
-    }
-    h1 {
-      text-align: center;
-    }
-    p {
-      line-height: 1.6;
-    }
-    .back {
-      display: inline-block;
-      margin-top: 20px;
-      background-color: #1c1c1c;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 6px;
-      text-decoration: none;
+      margin: 15px 0;
     }
     iframe {
       width: 100%;
-      height: 400px;
+      max-width: 560px;
+      height: 315px;
+      margin-top: 10px;
       border-radius: 10px;
-      margin-top: 20px;
+      border: none;
+    }
+    a {
+      color: #00b3ff;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1 id="movieTitle">Loading...</h1>
-    <img id="moviePoster" class="poster" src="" alt="Movie Poster">
-    <iframe id="movieTrailer" src="" frameborder="0" allowfullscreen></iframe>
-    <p id="movieDescription"></p>
-
-    <a class="back" href="index.html">⬅ Back to Home</a>
-  </div>
+  <h1 id="movieTitle"></h1>
+  <img id="moviePoster" src="" alt="Movie Poster">
+  <div id="trailerContainer"></div>
+  <p id="movieDesc"></p>
+  <p><a href="index.html">⬅ Back to home</a></p>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const movie = params.get('movie');
-
+    // Film məlumatları
     const movies = {
-      "avengers": {
+      avengers: {
         title: "Avengers: Endgame",
-        poster: "https://i.imgur.com/8RKXAIV.jpeg",
+        poster: "https://m.media-amazon.com/images/I/81ExhpBEbHL._AC_SL1500_.jpg",
         trailer: "https://www.youtube.com/embed/TcMBFSGVi1c",
-        description: "The Avengers assemble once more in order to reverse Thanos' actions and restore balance to the universe."
+        desc: "The Avengers unite once more to reverse Thanos's actions and restore balance to the universe."
       },
-      "joker": {
+      joker: {
         title: "Joker",
-        poster: "https://i.imgur.com/DcZ8kLk.jpeg",
+        poster: "https://m.media-amazon.com/images/I/71niXI3lxlL._AC_SL1500_.jpg",
         trailer: "https://www.youtube.com/embed/zAGVQLHvwOY",
-        description: "A mentally troubled comedian embarks on a downward spiral that leads to the creation of an iconic villain."
+        desc: "Arthur Fleck, a failed comedian, descends into madness and becomes the criminal mastermind known as Joker."
       },
-      "spiderman": {
+      spiderman: {
         title: "Spider-Man: No Way Home",
-        poster: "https://i.imgur.com/q2w7rTr.jpeg",
+        poster: "https://m.media-amazon.com/images/I/71VbH6eQwHL._AC_SL1000_.jpg",
         trailer: "https://www.youtube.com/embed/JfVOs4VSpmA",
-        description: "Peter Parker’s secret identity is revealed, bringing chaos to his life and those around him."
+        desc: "Peter Parker seeks Doctor Strange's help to make everyone forget he's Spider-Man — but chaos ensues."
       },
-      "freeguy": {
+      freeguy: {
         title: "Free Guy",
-        poster: "https://i.imgur.com/YcQHjzA.jpeg",
+        poster: "https://m.media-amazon.com/images/I/81ZLwAwD5-L._AC_SL1500_.jpg",
         trailer: "https://www.youtube.com/embed/X2m-08cOAbc",
-        description: "A bank teller discovers that he’s actually an NPC inside a brutal, open-world video game."
+        desc: "A bank teller discovers he's actually a character inside an open-world video game."
+      },
+      interstellar: {
+        title: "Interstellar",
+        poster: "https://m.media-amazon.com/images/I/91kFYg4fX3L._AC_SL1500_.jpg",
+        trailer: "",
+        desc: "A group of explorers travel through a wormhole in space to ensure humanity's survival."
       }
     };
 
-    const data = movies[movie];
-    if (data) {
-      document.getElementById('movieTitle').textContent = data.title;
-      document.getElementById('moviePoster').src = data.poster;
-      document.getElementById('movieTrailer').src = data.trailer;
-      document.getElementById('movieDescription').textContent = data.description;
+    // URL-dən film ID-ni götür
+    const urlParams = new URLSearchParams(window.location.search);
+    const movieId = urlParams.get('movie');
+
+    // Filmi göstər
+    const movie = movies[movieId];
+    if (movie) {
+      document.getElementById('movieTitle').textContent = movie.title;
+      document.getElementById('moviePoster').src = movie.poster;
+      document.getElementById('movieDesc').textContent = movie.desc;
+      if (movie.trailer) {
+        document.getElementById('trailerContainer').innerHTML = `<iframe src="${movie.trailer}" allowfullscreen></iframe>`;
+      } else {
+        document.getElementById('trailerContainer').innerHTML = `<p><i>No trailer available</i></p>`;
+      }
     } else {
-      document.querySelector('.container').innerHTML = "<h2>Movie not found.</h2><a class='back' href='index.html'>⬅ Back</a>";
+      document.body.innerHTML = "<h2>Movie not found</h2><p><a href='index.html'>Back</a></p>";
     }
   </script>
 
