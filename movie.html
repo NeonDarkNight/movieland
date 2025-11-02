@@ -1,50 +1,60 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="az">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MovieLand - Film</title>
-<style>
-  body {margin:0; font-family:Arial,sans-serif; background:#0f0f0f; color:white; text-align:center; padding:20px;}
-  img {width:250px; height:auto; max-width:100%; border-radius:10px; margin:15px 0;}
-  iframe {width:100%; max-width:560px; height:315px; margin-top:10px; border-radius:10px; border:none;}
-  a {color:#00b3ff; text-decoration:none;}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Film Detalı</title>
+  <style>
+    body {background:#121212; color:#fff; font-family:sans-serif; margin:0;}
+    .container {max-width:700px; margin:34px auto; background:#242424; border-radius:12px; box-shadow:0 2px 16px #0008; overflow:hidden;}
+    .poster {width:100%; max-height:420px; object-fit:cover; background:#333; display:block;}
+    .content {padding:24px;}
+    h1 {margin:0 0 12px 0;}
+    .back-btn {margin:0 0 26px 0; display:inline-block; color:#c00; text-decoration:none; font-weight:600; letter-spacing:1px;}
+    .info {color:#bbb; margin:0 0 14px 0;}
+    .desc {font-size:1.1rem; line-height:1.6;}
+    @media (max-width:600px){
+      .container {margin:12px; border-radius:6px;}
+      .content {padding:14px;}
+      .poster {max-height:210px;}
+      h1 {font-size:1.3rem;}
+    }
+  </style>
 </head>
 <body>
+  <div class="container" id="detailBox"></div>
+  <script>
+    // Filmlər siyahısı (Eyni məlumatlar index.html-dən)
+    const movies = [
+      {id:"avengers", title:"Avengers: Endgame", year:2019, category:"Aksiya", poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", desc:"Qəhrəmanlar kainatı xilas etmək üçün son döyüşə hazırlaşırlar."},
+      {id:"joker", title:"Joker", year:2019, category:"Dram", poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc:"Tənhalıq və cəmiyyətin rədd etdiyi bir insanın tarixçəsi."},
+      {id:"spiderman", title:"Spider-Man: No Way Home", year:2021, category:"Aksiya", poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", desc:"Peter Parkerin həyatı alt-üst olur."},
+      {id:"freeguy", title:"Free Guy", year:2021, category:"Komediya", poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", desc:"Bir oyun dünyasında qəhrəman olmağa çalışan adi bir adam."},
+      {id:"interstellar", title:"Interstellar", year:2014, category:"Fantastik", poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg", desc:"İnsanlığın sağ qalması üçün kosmik səyahət."}
+    ];
 
-<h1 id="movieTitle"></h1>
-<img id="moviePoster" src="" alt="Movie Poster">
-<div id="trailerContainer"></div>
-<p id="movieDesc"></p>
-<p><a href="index.html">⬅ Back to home</a></p>
+    function getParam(name){
+      const url = new URL(window.location.href);
+      return url.searchParams.get(name);
+    }
 
-<script>
-const movies = {
-  avengers:{title:"Avengers: Endgame", poster:"https://m.media-amazon.com/images/M/MV5BMTc5MDE2ODcwNV5BMl5BanBnXkFtZTgwMzI2NzQ2NzM@._V1_.jpg", trailer:"https://www.youtube.com/embed/TcMBFSGVi1c", desc:"The Avengers unite once more to reverse Thanos's actions and restore balance to the universe."},
-  joker:{title:"Joker", poster:"https://m.media-amazon.com/images/M/MV5BNzY3OWQ5NDktNWQ2OC00ZjdlLThkMmItMDhhNDk3NTFiZGU4XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/zAGVQLHvwOY", desc:"Arthur Fleck, a failed comedian, descends into madness and becomes the criminal mastermind known as Joker."},
-  spiderman:{title:"Spider-Man: No Way Home", poster:"https://m.media-amazon.com/images/M/MV5BMmFiZGZjMmEtMTA0Ni00MzA2LTljMTYtZGI2MGJmZWYzZTQ2XkEyXkFqcGc@._V1_.jpg", trailer:"https://www.youtube.com/embed/JfVOs4VSpmA", desc:"Peter Parker seeks Doctor Strange's help to make everyone forget he's Spider-Man — but chaos ensues."},
-  freeguy:{title:"Free Guy", poster:"https://m.media-amazon.com/images/M/MV5BN2I0MGMxYjUtZTZiMS00MzMxLTkzNWYtMDUyZmUwY2ViYTljXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg", trailer:"https://www.youtube.com/embed/X2m-08cOAbc", desc:"A bank teller discovers he's actually a character inside an open-world video game."},
-  interstellar:{title:"Interstellar", poster:"https://m.media-amazon.com/images/M/MV5BYzdjMDAxZGItMjI2My00ODA1LTlkNzItOWFjMDU5ZDJlYWY3XkEyXkFqcGc@._V1_.jpg", trailer:"", desc:"A group of explorers travel through a wormhole in space to ensure humanity's survival."}
-};
+    const movieId = getParam('movie');
+    const movie = movies.find(m=>m.id === movieId);
+    const detailBox = document.getElementById('detailBox');
 
-const urlParams=new URLSearchParams(window.location.search);
-const movieId=urlParams.get('movie');
-const movie=movies[movieId];
-
-if(movie){
-  document.getElementById('movieTitle').textContent=movie.title;
-  document.getElementById('moviePoster').src=movie.poster;
-  document.getElementById('movieDesc').textContent=movie.desc;
-  if(movie.trailer){
-    document.getElementById('trailerContainer').innerHTML=`<iframe src="${movie.trailer}" allowfullscreen></iframe>`;
-  }else{
-    document.getElementById('trailerContainer').innerHTML=`<p><i>No trailer available</i></p>`;
-  }
-}else{
-  document.body.innerHTML="<h2>Movie not found</h2><p><a href='index.html'>Back</a></p>";
-}
-</script>
-
+    if(!movie){
+      detailBox.innerHTML = `<div class="content"><a href="index.html" class="back-btn">← Geri qayıt</a><h1>Film tapılmadı</h1></div>`;
+    } else {
+      detailBox.innerHTML = `
+        <img class="poster" src="${movie.poster}" alt="${movie.title}" onerror="this.onerror=null;this.src='https://via.placeholder.com/600x380?text=No+Image'">
+        <div class="content">
+          <a href="index.html" class="back-btn">← Bütün filmlər</a>
+          <h1>${movie.title}</h1>
+          <div class="info">${movie.year} • ${movie.category}</div>
+          <div class="desc">${movie.desc}</div>
+        </div>
+      `;
+    }
+  </script>
 </body>
 </html>
